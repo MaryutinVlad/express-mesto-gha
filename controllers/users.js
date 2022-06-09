@@ -39,19 +39,14 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
-    .then(() => {
-      if (name.length < 2 || about.length < 2 || name.length > 30 || about.length > 30) {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
-      }
-      return res.send({ name, about });
-    })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, context: 'query' })
+    .then(() => res.send({ name, about }))
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(404).send({ message: 'Пользователь не нйден' });
       }
 
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(400).send({ message: 'Переданы некорректные данные' });
     });
 };
 
