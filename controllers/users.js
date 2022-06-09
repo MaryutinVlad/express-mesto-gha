@@ -8,10 +8,15 @@ module.exports.findUsers = (_req, res) => {
 
 module.exports.findUser = (req, res) => {
   User.findById(req.params.id)
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      return res.send(user);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Пользователь не нйден' });
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
 
       return res.status(500).send({ message: 'Ошибка сервера' });
@@ -35,11 +40,13 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then((oldData) => res.send(oldData))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+    .then(() => {
+      if (name.length < 2 || about.length < 2 || name.length > 30 || about.length > 30) {
         return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
+      return res.send({ name, about });
+    })
+    .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(404).send({ message: 'Пользователь не нйден' });
       }
@@ -51,7 +58,7 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar })
-    .then((oldData) => res.send(oldData))
+    .then(() => res.send({ avatar }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные' });

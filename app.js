@@ -21,6 +21,7 @@ app.use((req, _res, next) => {
 app.use(bodyParser.json());
 app.use('/', userRouter);
 app.use('/', cardsRouter);
+app.use('/', (_req, res) => res.status(404).send({ message: 'Неправильный путь и/или запрос' }));
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

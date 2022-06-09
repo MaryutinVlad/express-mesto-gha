@@ -17,10 +17,15 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
-    .then((deletedCard) => res.send(`${deletedCard}\n was deleted`))
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Карточка не найдена' });
+      }
+      return res.send(data);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Картока не найдена' });
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
 
       return res.status(500).send({ message: 'Ошибка сервера' });
@@ -51,13 +56,15 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((data) => res.send(data))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Карточка не найдена' });
       }
+      return res.send(data);
+    })
+    .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Пользователь не нйден' });
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
 
       return res.status(500).send({ message: 'Ошибка сервера' });
@@ -70,13 +77,15 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((data) => res.send(data))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Карточка не найдена' });
       }
+      return res.send(data);
+    })
+    .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Пользователь не нйден' });
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
 
       return res.status(500).send({ message: 'Ошибка сервера' });
