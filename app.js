@@ -19,8 +19,8 @@ app.use((req, _res, next) => {
   next();
 });
 app.use(bodyParser.json());
-app.use('/', userRouter);
-app.use('/', cardsRouter);
+app.use('/users', userRouter);
+app.use('/cards', cardsRouter);
 app.use('/', (_req, res) => res.status(404).send({ message: 'Неправильный путь и/или запрос' }));
 
 app.listen(PORT, () => {

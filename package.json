@@ -1,7 +1,7 @@
 {
   "name": "express-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Проект сервера для сервиса mesto",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",

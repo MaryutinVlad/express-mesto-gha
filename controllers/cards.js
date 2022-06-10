@@ -8,10 +8,10 @@ module.exports.createCard = (req, res) => {
     .then((newCard) => res.send({ data: newCard }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
+        return res.status(400).send({ message: err.message });
       }
 
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -25,28 +25,33 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
+        return res.status(400).send({ message: err.message });
       }
 
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: err.message });
     });
 };
 
 module.exports.findCards = (_req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.findCard = (req, res) => {
   Card.findById(req.params.id)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
+    .then((card) => {
+      if (!card) {
         return res.status(404).send({ message: 'Картока не найдена' });
       }
+      return res.send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: err.message });
+      }
 
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -64,10 +69,10 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
+        return res.status(400).send({ message: err.message });
       }
 
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -85,9 +90,9 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные' });
+        return res.status(400).send({ message: err.message });
       }
 
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: err.message });
     });
 };
