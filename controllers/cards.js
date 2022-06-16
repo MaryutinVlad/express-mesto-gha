@@ -16,12 +16,18 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(req.params.id)
     .then((data) => {
       if (!data) {
         return res.status(404).send({ message: 'Карточка не найдена' });
       }
-      return res.send(data);
+
+      if (`${data.owner._id}` !== req.user._id) {
+        return res.status(403).send({ message: 'Нельзя удалить карточку другого пользователя' });
+      }
+      return Card.remove(data)
+        .then((deleteState) => res.send(deleteState))
+        .catch((err) => res.status(400).send({ message: err.message }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
