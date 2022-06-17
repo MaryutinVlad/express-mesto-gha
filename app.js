@@ -19,7 +19,7 @@ app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardsRouter);
 app.post('/signin', login);
 app.post('/signup', createUser);
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
 
   res
