@@ -1,6 +1,9 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
+const AuthError = require('../errors/auth-error');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -8,60 +11,60 @@ module.exports.createCard = (req, res) => {
     .then((newCard) => res.send({ data: newCard }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
 
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Card not found');
       }
 
       if (`${data.owner._id}` !== req.user._id) {
-        return res.status(403).send({ message: 'Нельзя удалить карточку другого пользователя' });
+        throw new AuthError('Card can be removed by its owner only');
       }
       return Card.remove(data)
         .then((deleteState) => res.send(deleteState))
-        .catch((err) => res.status(400).send({ message: err.message }));
+        .catch((err) => next(new BadRequestError(err.message)));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
 
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.findCards = (_req, res) => {
+module.exports.findCards = (_req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.findCard = (req, res) => {
+module.exports.findCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Картока не найдена' });
+        throw new NotFoundError('Card not found');
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: err.message });
+        return next(new NotFoundError(err.message));
       }
 
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -69,20 +72,20 @@ module.exports.likeCard = (req, res) => {
   )
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Card not found');
       }
       return res.send(data);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
 
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -90,15 +93,15 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+        throw new NotFoundError('Card not found');
       }
       return res.send(data);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
 
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };

@@ -19,8 +19,16 @@ app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardsRouter);
 app.post('/signin', login);
 app.post('/signup', createUser);
-app.use('/', (_req, res) => res.status(404).send({ message: 'Неправильный путь и/или запрос' }));
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+  res
+    .status(statusCode)
+    .send({
+      messsage: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
 });
+
+app.listen(PORT);
