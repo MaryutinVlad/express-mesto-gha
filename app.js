@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -27,6 +27,7 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
   }).unknown(true),
 }), createUser);
+app.use(errors());
 app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
 
