@@ -22,7 +22,7 @@ module.exports.findUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError({ message: err.message }));
+        next(new BadRequestError(err.message));
       }
       return next(err);
     });
@@ -58,7 +58,7 @@ module.exports.createUser = (req, res, next) => {
         .then((newUser) => res.send(newUser))
         .catch((err) => {
           if (err.name === 'ValidationError') {
-            return next(new BadRequestError({ message: err.message }));
+            return next(new BadRequestError(err.message));
           }
           if (err.code === 11000) {
             return res.status(409).send({ message: err.message });
@@ -79,7 +79,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
 
       return next(err);
@@ -93,10 +93,10 @@ module.exports.updateUser = (req, res, next) => {
       .then((user) => res.send(user)))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new NotFoundError({ message: err.message }));
+        return next(new NotFoundError(err.message));
       }
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
 
       return next(err);
@@ -113,10 +113,10 @@ module.exports.updateAvatar = (req, res, next) => {
       .then((user) => res.send(user)))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
       if (err.name === 'CastError') {
-        return next(new NotFoundError({ message: err.message }));
+        return next(new NotFoundError(err.message));
       }
 
       return next(err);

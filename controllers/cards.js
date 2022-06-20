@@ -11,7 +11,7 @@ module.exports.createCard = (req, res, next) => {
     .then((newCard) => res.send({ data: newCard }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
 
       return next(err);
@@ -30,11 +30,11 @@ module.exports.deleteCard = (req, res, next) => {
       }
       return Card.remove(data)
         .then((deleteState) => res.send(deleteState))
-        .catch((err) => next(new BadRequestError({ message: err.message })));
+        .catch((err) => next(new BadRequestError(err.message)));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
 
       return next(err);
@@ -57,7 +57,7 @@ module.exports.findCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new NotFoundError({ message: err.message }));
+        return next(new NotFoundError(err.message));
       }
 
       return next(err);
@@ -78,7 +78,7 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
 
       return next(err);
@@ -99,7 +99,7 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError({ message: err.message }));
+        return next(new BadRequestError(err.message));
       }
 
       return next(err);
