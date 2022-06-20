@@ -25,7 +25,7 @@ cardsRouter.get('/:id', celebrate({
   })
 }), findCard);
 
-cardsRouter.delete('/:id', celebrate({
+cardsRouter.delete('/:cardId', celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),
   })

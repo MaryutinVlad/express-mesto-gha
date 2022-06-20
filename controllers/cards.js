@@ -20,7 +20,7 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.id)
+  Card.findById(req.params.cardId)
     .then((data) => {
       if (!data) {
         throw new NotFoundError('Card not found');
@@ -49,7 +49,7 @@ module.exports.findCards = (_req, res, next) => {
 };
 
 module.exports.findCard = (req, res, next) => {
-  Card.findById(req.params.id)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Card not found');
