@@ -32,7 +32,7 @@ userRouter.patch('/me', celebrate({
 
 userRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri(),
+    avatar: Joi.string(),
   })
 }), updateAvatar);
 
