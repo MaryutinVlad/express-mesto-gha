@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { celebrate, Joi } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -18,7 +19,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardsRouter);
 app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required().min(6).max(20),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }).unknown(true),
+}), createUser);
 app.use((err, req, res) => {
   const { statusCode = 500, message } = err;
 
