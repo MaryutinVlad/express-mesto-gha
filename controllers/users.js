@@ -37,10 +37,6 @@ module.exports.createUser = (req, res, next) => {
     password,
   } = req.body;
 
-  if (!avatar.replace(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig, '')) {
-    throw new BadRequestError('Avatar link validation failed');
-  }
-
   if (!password) {
     throw new BadRequestError('Password is missing');
   }
@@ -109,7 +105,7 @@ module.exports.updateUser = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  if (!avatar.replace(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig, '')) {
+  if (!avatar.replace(/[https://|http://]/g, '')) {
     throw new BadRequestError('Avatar link validation failed');
   }
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, context: 'query' })
