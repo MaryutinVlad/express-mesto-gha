@@ -13,7 +13,13 @@ const {
 cardsRouter.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().uri(),
+    link: Joi.string().required().uri().custom((value, helper) => {
+      if (value !== value.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+        return helper.message('Avatar validation failed');
+      } else {
+        return value;
+      }
+    }),
   })
 }), createCard);
 

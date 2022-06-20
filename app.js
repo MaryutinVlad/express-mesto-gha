@@ -18,21 +18,30 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardsRouter);
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6).max(20),
   })
 }), login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(6).max(20),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().uri().custom((value, helper) => {
+      if (value !== value.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+        return helper.message('Avatar validation failed');
+      } else {
+        return value;
+      }
+    }),
   }).unknown(true),
 }), createUser);
+
 app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
@@ -45,6 +54,7 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
+
 app.use('/', (req, res) => res.status(404).send({ message: "Wrong path" }));
 
 app.listen(PORT);

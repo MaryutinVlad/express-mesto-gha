@@ -34,7 +34,7 @@ userRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().custom((value, helper) => {
       if (value !== value.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
-        return helper.message('too bad');
+        return helper.message('Avatar validation failed');
       } else {
         return value;
       }
