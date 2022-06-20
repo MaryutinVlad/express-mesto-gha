@@ -45,5 +45,6 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
+app.use('/', (req, res) => res.status(404).send({ message: "Wrong path" }));
 
 app.listen(PORT);
