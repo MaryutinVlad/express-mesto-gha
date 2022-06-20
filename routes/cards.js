@@ -19,12 +19,24 @@ cardsRouter.post('/', celebrate({
 
 cardsRouter.get('/', findCards);
 
-cardsRouter.get('/:id', findCard);
+cardsRouter.get('/:id', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  })
+}), findCard);
 
 cardsRouter.delete('/:id', deleteCard);
 
-cardsRouter.put('/:cardId/likes', likeCard);
+cardsRouter.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  })
+}), likeCard);
 
-cardsRouter.delete('/:cardId/likes', dislikeCard);
+cardsRouter.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  })
+}), dislikeCard);
 
 module.exports = cardsRouter;
