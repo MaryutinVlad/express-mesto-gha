@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
+const PermissionError = require('../errors/permission-error');
 const AuthError = require('../errors/auth-error');
 
 module.exports.createCard = (req, res, next) => {
@@ -22,11 +23,11 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((data) => {
       if (!data) {
-        throw new NotFoundError('Card not found');
+        return res.status(404).send({ message: 'User not found' });
       }
 
       if (`${data.owner._id}` !== req.user._id) {
-        throw new AuthError('Card can be removed by its owner only');
+        throw new PermissionError('Card can be removed by its owner only');
       }
       return Card.remove(data)
         .then((deleteState) => res.send(deleteState))
@@ -51,7 +52,7 @@ module.exports.findCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Card not found');
+        return res.status(404).send({ message: 'User not found' });
       }
       return res.send(card);
     })
@@ -72,7 +73,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((data) => {
       if (!data) {
-        throw new NotFoundError('Card not found');
+        return res.status(404).send({ message: 'User not found' });;
       }
       return res.send(data);
     })
@@ -93,7 +94,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((data) => {
       if (!data) {
-        throw new NotFoundError('Card not found');
+        return res.status(404).send({ message: 'User not found' });;
       }
       return res.send(data);
     })
