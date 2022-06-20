@@ -105,7 +105,7 @@ module.exports.updateUser = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  if (avatar !== avatar.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+  if (avatar == avatar.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
     throw new BadRequestError('Avatar link validation failed');
   }
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, context: 'query' })
