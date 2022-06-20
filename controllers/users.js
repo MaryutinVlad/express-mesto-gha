@@ -16,7 +16,7 @@ module.exports.findUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'User not found' });
+        throw new NotFoundError('User not found');
       }
       return res.send(user);
     })

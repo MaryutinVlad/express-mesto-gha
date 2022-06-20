@@ -23,7 +23,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'User not found' });
+        throw new NotFoundError('Card not found');
       }
 
       if (`${data.owner._id}` !== req.user._id) {
@@ -52,7 +52,7 @@ module.exports.findCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'User not found' });
+        throw new NotFoundError('Card not found');
       }
       return res.send(card);
     })
@@ -73,7 +73,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'User not found' });;
+        throw new NotFoundError('Card not found');
       }
       return res.send(data);
     })
@@ -94,7 +94,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'User not found' });;
+        throw new NotFoundError('Card not found');
       }
       return res.send(data);
     })
