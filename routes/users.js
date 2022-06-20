@@ -32,7 +32,13 @@ userRouter.patch('/me', celebrate({
 
 userRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string(),
+    avatar: Joi.string().custom((value, helper) => {
+      if (value !== value.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+        return helper.message('too bad');
+      } else {
+        return value;
+      }
+    }),
   })
 }), updateAvatar);
 
