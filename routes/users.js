@@ -13,33 +13,32 @@ userRouter.get('/', findUsers);
 
 userRouter.get('/me', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
-  })
+    id: Joi.string().hex().alphanum().length(24),
+  }),
 }), getCurrentUser);
 
 userRouter.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
-  })
+    id: Joi.string().hex().alphanum().length(24),
+  }),
 }), findUser);
 
 userRouter.patch('/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-  })
+  }),
 }), updateUser);
 
 userRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().custom((value, helper) => {
-      if (value !== value.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+      if (value !== value.match(/^https?:\/\/(www\.)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?$/g).join('')) {
         return helper.message('Avatar validation failed');
-      } else {
-        return value;
       }
+      return value;
     }),
-  })
+  }),
 }), updateAvatar);
 
 module.exports = userRouter;

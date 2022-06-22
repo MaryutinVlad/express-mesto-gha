@@ -23,8 +23,9 @@ module.exports.findUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(err.message));
+      } else {
+        next(err);
       }
-      return next(err);
     });
 };
 
@@ -105,7 +106,7 @@ module.exports.updateUser = (req, res, next) => {
 
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  if (avatar !== avatar.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+  if (avatar !== avatar.match(/^https?:\/\/(www\.)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?$/g).join('')) {
     throw new BadRequestError('Avatar link validation failed');
   }
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, context: 'query' })

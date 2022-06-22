@@ -10,6 +10,12 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: [true, 'поле link должно быть заполнено'],
+    validate: {
+      validator(link) {
+        return link === link.match(/^https?:\/\/(www\.)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?$/g).join('');
+      },
+      message: 'Link validation failed',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -18,6 +24,7 @@ const cardSchema = new mongoose.Schema({
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
   }],
   createdAt: {
     type: Date,

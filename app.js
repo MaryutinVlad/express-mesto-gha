@@ -9,6 +9,7 @@ const cardsRouter = require('./routes/cards');
 const userRouter = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-error');
 
 const app = express();
 
@@ -22,29 +23,31 @@ app.use('/cards', auth, cardsRouter);
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(6).max(20),
-  })
+    password: Joi.string().required(),
+  }),
 }), login);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(6).max(20),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().uri().custom((value, helper) => {
-      if (value !== value.match(/(http|https):\/\/(www\.|)\S+/g).join('')) {
+      if (value !== value.match(/^https?:\/\/(www\.)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?$/g).join('')) {
         return helper.message('Avatar validation failed');
-      } else {
-        return value;
       }
+      return value;
     }),
   }).unknown(true),
 }), createUser);
 
 app.use(errors());
+app.use('/', (req, res, next) => next(new NotFoundError('Wrong path')));
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
+
+  console.log(next);
 
   res
     .status(statusCode)
@@ -54,7 +57,5 @@ app.use((err, req, res, next) => {
         : message,
     });
 });
-
-app.use('/', (req, res) => res.status(404).send({ message: "Wrong path" }));
 
 app.listen(PORT);

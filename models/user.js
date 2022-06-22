@@ -16,6 +16,12 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator(link) {
+        return link === link.match(/^https?:\/\/(www\.)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?$/g).join('');
+      },
+      message: 'Link validation failed',
+    },
   },
   email: {
     type: String,
@@ -25,7 +31,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'поле password должно быть заполнено'],
-    minlength: [6, 'в поле password должно быть не менее 6 символов'],
     select: false,
   },
 });
