@@ -43,7 +43,7 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(errors());
-//app.use('/', (req, res, next) => next(new NotFoundError('Wrong path')));
+app.use('/', (req, res, next) => next(new NotFoundError('Wrong path')));
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
