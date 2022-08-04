@@ -8,7 +8,8 @@ module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((newCard) => res.send({ data: newCard }))
+    .then(() => Card.findOne({ link, name }))
+    .then((result) => res.send(result))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError(err.message));
